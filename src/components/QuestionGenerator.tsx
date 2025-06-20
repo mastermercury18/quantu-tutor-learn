@@ -100,6 +100,7 @@ export const QuestionGenerator: React.FC<QuestionGeneratorProps> = ({
             <div className="flex gap-3">
               <Input
                 type="number"
+                step="0.01"
                 placeholder="Enter your answer..."
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
@@ -163,51 +164,4 @@ export const QuestionGenerator: React.FC<QuestionGeneratorProps> = ({
       </CardContent>
     </Card>
   );
-};
-
-// Static methods for question generation
-QuestionGenerator.generateTEBDQuestion = (difficulty: number, weakTopics: string[]) => {
-  const topics = ['algebra', 'geometry', 'calculus', 'statistics', 'trigonometry'];
-  const selectedTopic = weakTopics.length > 0 ? 
-    weakTopics[Math.floor(Math.random() * weakTopics.length)] : 
-    topics[Math.floor(Math.random() * topics.length)];
-
-  // Generate quantum state for TEBD simulation
-  const quantumState = Array.from({length: 8}, () => (Math.random() - 0.5) * 2);
-  
-  const questions = {
-    algebra: [
-      {
-        question: `Solve for x: ${Math.round(difficulty)}x + ${Math.round(difficulty * 2)} = ${Math.round(difficulty * 5)}`,
-        answer: Math.round(difficulty * 3 / difficulty),
-        explanation: "Subtract the constant term from both sides, then divide by the coefficient of x."
-      },
-      {
-        question: `If f(x) = ${difficulty}x² + ${Math.round(difficulty * 2)}x + 1, what is f(2)?`,
-        answer: difficulty * 4 + difficulty * 4 + 1,
-        explanation: "Substitute x = 2 into the function and calculate."
-      }
-    ],
-    geometry: [
-      {
-        question: `What is the area of a circle with radius ${difficulty}?`,
-        answer: Math.round(Math.PI * difficulty * difficulty * 100) / 100,
-        explanation: "Use the formula A = πr² where r is the radius."
-      }
-    ]
-  };
-
-  const topicQuestions = questions[selectedTopic as keyof typeof questions] || questions.algebra;
-  const selectedQ = topicQuestions[Math.floor(Math.random() * topicQuestions.length)];
-
-  return {
-    id: Math.random().toString(36).substr(2, 9),
-    type: 'numeric',
-    difficulty: Math.round(difficulty),
-    topic: selectedTopic,
-    question: selectedQ.question,
-    answer: selectedQ.answer,
-    explanation: selectedQ.explanation,
-    quantumState
-  };
 };

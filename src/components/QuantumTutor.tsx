@@ -8,6 +8,8 @@ import { Brain, Zap, Target, TrendingUp } from 'lucide-react';
 import { QuestionGenerator } from './QuestionGenerator';
 import { MasteryTracker } from './MasteryTracker';
 import { ReinforcementAgent } from './ReinforcementAgent';
+import { generateTEBDQuestion } from '@/utils/questionUtils';
+import { updateState } from '@/utils/reinforcementUtils';
 
 interface UserState {
   masteryLevel: number;
@@ -37,14 +39,14 @@ const QuantumTutor: React.FC = () => {
     // Simulate quantum-inspired question generation with TEBD
     setTimeout(() => {
       const difficulty = Math.min(userState.masteryLevel + (Math.random() - 0.5), 10);
-      const question = QuestionGenerator.generateTEBDQuestion(difficulty, userState.weakTopics);
+      const question = generateTEBDQuestion(difficulty, userState.weakTopics);
       setCurrentQuestion(question);
       setIsLoading(false);
     }, 1000);
   }, [userState.masteryLevel, userState.weakTopics]);
 
   const handleAnswer = (isCorrect: boolean, timeTaken: number) => {
-    const newState = ReinforcementAgent.updateState(userState, isCorrect, timeTaken);
+    const newState = updateState(userState, isCorrect, timeTaken);
     setUserState(newState);
     
     // Generate next question based on updated state
