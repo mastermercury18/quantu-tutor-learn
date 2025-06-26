@@ -1,5 +1,7 @@
 
-export const generateTEBDQuestion = (difficulty: number, weakTopics: string[]) => {
+import { supabase } from '@/integrations/supabase/client';
+
+export const generateTEBDQuestion = async (difficulty: number, weakTopics: string[]) => {
   const topics = ['algebra', 'geometry', 'calculus', 'statistics', 'trigonometry'];
   const selectedTopic = weakTopics.length > 0 ? 
     weakTopics[Math.floor(Math.random() * weakTopics.length)] : 
@@ -33,14 +35,59 @@ export const generateTEBDQuestion = (difficulty: number, weakTopics: string[]) =
   const topicQuestions = questions[selectedTopic as keyof typeof questions] || questions.algebra;
   const selectedQ = topicQuestions[Math.floor(Math.random() * topicQuestions.length)];
 
+  // Save question to database
+  const { data, error } = await supabase
+    .from('questions')
+    .insert({
+      question_text: selectedQ.question,
+      answer: selectedQ.answer,
+      explanation: selectedQ.explanation,
+      topic: selectedTopic,
+      difficulty: Math.round(difficulty * 100) / 100,
+      question_type: 'numeric',
+      quantum_state: quantumState
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error saving question to database:', error);
+    // Return a fallback question if database save fails
+    return {
+      id: Math.random().toString(36).substr(2, 9),
+      type: 'numeric',
+      difficulty: Math.round(difficulty * 100) / 100,
+      topic: selectedTopic,
+      question: selectedQ.question,
+      answer: selectedQ.answer,
+      explanation: selectedQ.explanation,
+      quantumState
+    };
+  }
+
   return {
-    id: Math.random().toString(36).substr(2, 9),
-    type: 'numeric',
-    difficulty: Math.round(difficulty * 100) / 100,
-    topic: selectedTopic,
-    question: selectedQ.question,
-    answer: selectedQ.answer,
-    explanation: selectedQ.explanation,
-    quantumState
+    id: data.id,
+    type: data.question_type || 'numeric',
+    difficulty: data.difficulty,
+    topic: data.topic,
+    question: data.question_text,
+    answer: data.answer,
+    explanation: data.explanation || '',
+    quantumState: data.quantum_state || quantumState
   };
+};
+
+export const saveQuestionAttempt = async (questionId: string, userAnswer: number, isCorrect: boolean, timeTaken: number) => {
+  const { error } = await supabase
+    .from('question_attempts')
+    .insert({
+      question_id: questionId,
+      user_answer: userAnswer,
+      is_correct: isCorrect,
+      time_taken: timeTaken
+    });
+
+  if (error) {
+    console.error('Error saving question attempt:', error);
+  }
 };

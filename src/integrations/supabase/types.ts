@@ -9,7 +9,80 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      question_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          time_taken: number
+          user_answer: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          time_taken: number
+          user_answer?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          time_taken?: number
+          user_answer?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_attempts_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      questions: {
+        Row: {
+          answer: number
+          created_at: string
+          difficulty: number
+          explanation: string | null
+          id: string
+          quantum_state: Json | null
+          question_text: string
+          question_type: string | null
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          answer: number
+          created_at?: string
+          difficulty: number
+          explanation?: string | null
+          id?: string
+          quantum_state?: Json | null
+          question_text: string
+          question_type?: string | null
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: number
+          created_at?: string
+          difficulty?: number
+          explanation?: string | null
+          id?: string
+          quantum_state?: Json | null
+          question_text?: string
+          question_type?: string | null
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

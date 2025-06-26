@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Clock, Atom } from 'lucide-react';
+import { saveQuestionAttempt } from '@/utils/questionUtils';
 
 interface Question {
   id: string;
@@ -40,13 +41,16 @@ export const QuestionGenerator: React.FC<QuestionGeneratorProps> = ({
     setFeedback('');
   }, [question]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const timeTaken = Date.now() - startTime;
     const numericAnswer = parseFloat(userAnswer);
     const isCorrect = Math.abs(numericAnswer - question.answer) < 0.01;
     
     setSubmitted(true);
     setFeedback(isCorrect ? 'Correct! Well done!' : `Incorrect. The answer is ${question.answer}`);
+    
+    // Save the attempt to the database
+    await saveQuestionAttempt(question.id, numericAnswer, isCorrect, timeTaken);
     
     setTimeout(() => {
       onAnswer(isCorrect, timeTaken);

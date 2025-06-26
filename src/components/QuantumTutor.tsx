@@ -34,15 +34,19 @@ const QuantumTutor: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionActive, setSessionActive] = useState(false);
 
-  const generateNewQuestion = useCallback(() => {
+  const generateNewQuestion = useCallback(async () => {
     setIsLoading(true);
-    // Simulate quantum-inspired question generation with TEBD
-    setTimeout(() => {
+    try {
+      // Simulate quantum-inspired question generation with TEBD
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const difficulty = Math.min(userState.masteryLevel + (Math.random() - 0.5), 10);
-      const question = generateTEBDQuestion(difficulty, userState.weakTopics);
+      const question = await generateTEBDQuestion(difficulty, userState.weakTopics);
       setCurrentQuestion(question);
+    } catch (error) {
+      console.error('Error generating question:', error);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   }, [userState.masteryLevel, userState.weakTopics]);
 
   const handleAnswer = (isCorrect: boolean, timeTaken: number) => {
